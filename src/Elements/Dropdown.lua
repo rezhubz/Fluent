@@ -23,6 +23,7 @@ function Element:New(Idx, Config)
 		Multi = Config.Multi,
 		Buttons = {},
 		Opened = false,
+		Built = false,
 		Type = "Dropdown",
 		Callback = Config.Callback or function() end,
 	}
@@ -199,9 +200,16 @@ function Element:New(Idx, Config)
 
 	local ScrollFrame = self.ScrollFrame
 	function Dropdown:Open()
+        
+        if not Dropdown.Built then
+            Dropdown.Built = true
+            Dropdown:BuildDropdownList()
+        end
+
 		Dropdown.Opened = true
 		ScrollFrame.ScrollingEnabled = false
 		DropdownHolderCanvas.Visible = true
+
 		TweenService:Create(
 			DropdownHolderFrame,
 			TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
@@ -412,7 +420,12 @@ function Element:New(Idx, Config)
 			Dropdown.Values = NewValues
 		end
 
-		Dropdown:BuildDropdownList()
+        Dropdown.Built = false
+
+        if Dropdown.Opened then
+            Dropdown.Built = true
+            Dropdown:BuildDropdownList()
+        end
 	end
 
 	function Dropdown:OnChanged(Func)
@@ -450,7 +463,6 @@ function Element:New(Idx, Config)
 		Library.Options[Idx] = nil
 	end
 
-	Dropdown:BuildDropdownList()
 	Dropdown:Display()
 
 	local Defaults = {}
@@ -485,7 +497,6 @@ function Element:New(Idx, Config)
 			end
 		end
 
-		Dropdown:BuildDropdownList()
 		Dropdown:Display()
 	end
 
